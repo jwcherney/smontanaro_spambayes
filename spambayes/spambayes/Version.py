@@ -14,7 +14,7 @@ import sys
 import re
 
 try:
-    _
+    _ # pyright: ignore [reportUndefinedVariable]
 except NameError:
     _ = lambda arg: arg
 
@@ -218,7 +218,9 @@ class SBVersion:
         if isinstance(other, str):
             other = SBVersion(other)
 
-        return cmp(self.version_info, other.version_info)
+        a = self.version_info
+        b = other.version_info
+        return (a > b) - (a < b)
 
     def get_long_version(self, app_name = None):
         if app_name is None:
@@ -303,7 +305,7 @@ def _write_cfg_opts(stream, this_dict):
         elif isinstance(val, dict):
             val_str = None # sub-dict
         else:
-            print("Skipping unknown value type: %r" % val)
+            print(("Skipping unknown value type: %r" % val))
             val_str = None
         if val_str is not None:
             stream.write("%s:%s\n" % (name, val_str))
@@ -354,7 +356,7 @@ def main(args):
         sys.exit(0)
 
     v_this = get_current_version()
-    print("Current version:", v_this.get_long_version())
+    print(("Current version:", v_this.get_long_version()))
 
     print()
     print("Fetching the lastest version information...")
@@ -368,7 +370,7 @@ def main(args):
 
     v_latest = get_version(version_dict=latest_dict)
     print()
-    print("Latest version:", v_latest.get_long_version())
+    print(("Latest version:", v_latest.get_long_version()))
 
 if __name__ == '__main__':
     main(sys.argv)

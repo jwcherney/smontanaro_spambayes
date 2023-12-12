@@ -1289,7 +1289,7 @@ class Tokenizer:
         # the best discriminators.
         # (Not just Date, but Received and X-From_.)
         if options["Tokenizer", "basic_header_tokenize"]:
-            for k, v in msg.items():
+            for k, v in list(msg.items()):
                 k = k.lower()
                 for rx in self.basic_skip:
                     if rx.match(k):
@@ -1535,7 +1535,7 @@ class Tokenizer:
         # X-Complaints-To a strong ham clue.
         x2n = {}
         if options["Tokenizer", "count_all_header_lines"]:
-            for x in msg.keys():
+            for x in list(msg.keys()):
                 x2n[x] = x2n.get(x, 0) + 1
         else:
             # Do a "safe" approximation to that.  When spam and ham are
@@ -1543,10 +1543,10 @@ class Tokenizer:
             # lines can be a too strong a discriminator for accidental
             # reasons.
             safe_headers = options["Tokenizer", "safe_headers"]
-            for x in msg.keys():
+            for x in list(msg.keys()):
                 if x.lower() in safe_headers:
                     x2n[x] = x2n.get(x, 0) + 1
-        for x in x2n.items():
+        for x in list(x2n.items()):
             yield "header:%s:%d" % x
         if options["Tokenizer", "record_header_absence"]:
             for k in x2n:

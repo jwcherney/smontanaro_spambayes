@@ -205,7 +205,7 @@ def suite():
     clses = (PickleStorageTestCase,
              CDBStorageTestCase,
              )
-    import bsddb
+    from spambayes.port import bsddb
     from spambayes.port import gdbm
 
     if gdbm or bsddb:

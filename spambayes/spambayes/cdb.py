@@ -158,8 +158,8 @@ class Cdb(BytesCdb):
 def cdb_dump(infile):
     """dump a database in djb's cdbdump format"""
     db = Cdb(infile)
-    for key, value in db.items():
-        print("+%d,%d:%s->%s" % (len(key), len(value), key, value))
+    for key, value in list(db.items()):
+        print(("+%d,%d:%s->%s" % (len(key), len(value), key, value)))
     print()
 
 
@@ -226,12 +226,12 @@ def test():
     )
     db.close()
     db = Cdb(open("test.cdb", 'rb'))
-    print(db['one'])
-    print(db['two'])
-    print(db['foo'])
-    print(db['us'])
-    print(db.get('us'))
-    print(db.get('notthere'))
+    print((db['one']))
+    print((db['two']))
+    print((db['foo']))
+    print((db['us']))
+    print((db.get('us')))
+    print((db.get('notthere')))
 
 if __name__ == '__main__':
     test()

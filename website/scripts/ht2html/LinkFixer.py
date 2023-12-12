@@ -8,14 +8,13 @@ interpolation over the links using a dictionary.
 """
 
 import sys
-import urlparse
+import urllib.parse
 import posixpath # use posix semantics for urls
 from types import StringType
 
 SLASH = '/'
 
 
-
 class LinkFixer:
     def __init__(self, myurl, rootdir='.', relthis='.', verbose=0):
         self.__rootdir = rootdir
@@ -27,7 +26,7 @@ class LinkFixer:
     def msg(self, fmt, *args):
         if self.__verbose:
             msg = fmt % args
-            if msg[-1] <> '\n':
+            if msg[-1] != '\n':
                 msg = msg + '\n'
             sys.stdout.write(msg)
 
@@ -42,10 +41,10 @@ class LinkFixer:
 
         # normalize the path, kind of the way os.path.normpath() does.
         # urlparse ought to have something like this built in...
-        scheme, addr, path, params, query, frag = urlparse.urlparse(url)
+        scheme, addr, path, params, query, frag = urllib.parse.urlparse(url)
         abspath = SLASH.join([self.__rootdir, self.__relthis, path])
         path = posixpath.normpath(abspath)
-        absurl = urlparse.urlunparse((scheme, addr, path, params, query, frag))
+        absurl = urllib.parse.urlunparse((scheme, addr, path, params, query, frag))
         self.msg('absurl= %s', absurl)
         return absurl
 
@@ -93,7 +92,7 @@ class LinkFixer:
         j = absurl.rfind('/')
         if i > 0 and j > 0 and \
            absurl[:j] == myurl[:i] and \
-           myurl[i+1:] <> 'index.html':
+           myurl[i+1:] != 'index.html':
             return 1
         return 0
 

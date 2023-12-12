@@ -5,42 +5,26 @@ import os
 import pickle
 
 try:
-    from fasteners import InterProcessLock as _InterProcessLock
-except ImportError:
+    from filelock import filelock
+except:
+    import filelock
 
-    # Dummy locking class
-
-    class _InterProcessLock:
-        def __init__(self, filename):
-            import warnings
-
-            warnings.warn(
-                "Missing 'fasteners', using dummy locking for safepickle"
-            )
-
-        def acquire(self, timeout=0):
-            pass
-
-        def release(self):
-            pass
-
+from spambayes.Options import options
 
 def pickle_read(filename):
     """Read pickle file contents with a lock."""
-    lock = _InterProcessLock(filename)
-    lock.acquire(timeout=20)
-    try:
-        return pickle.load(open(filename, 'rb'))
-    finally:
-        lock.release()
+    lock = filelock.Filelock(filename+'.lck',timeout=20)
+    pickle_data = None
+    with lock:
+        pickle_data = pickle.load(open(filename, 'rb'))
+    return pickle_data
 
 def pickle_write(filename, value, protocol=0):
     '''Store value as a pickle without creating corruption'''
 
-    lock = _InterProcessLock(filename)
-    lock.acquire(timeout=20)
+    lock = filelock.Filelock(filename+'.lck',timeout=20)
 
-    try:
+    with lock:
         # Be as defensive as possible.  Always keep a safe copy.
         tmp = filename + '.tmp'
         fp = None
@@ -67,5 +51,4 @@ def pickle_write(filename, value, protocol=0):
             os.rename(filename, filename + '.bak')
             os.rename(tmp, filename)
             os.remove(filename + '.bak')
-    finally:
-        lock.release()
+    return

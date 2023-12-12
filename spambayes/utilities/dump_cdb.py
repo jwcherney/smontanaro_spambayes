@@ -12,12 +12,12 @@ def main():
     db_file = sys.argv[1]
     db = Cdb(open(db_file, 'rb'))
     items = []
-    for k, v in db.items():
+    for k, v in list(db.items()):
         items.append((float(v), k))
 
     items.sort()
     for v, k in items:
-        print(repr(k), '%.4f' % v)
+        print((repr(k), '%.4f' % v))
 
 
 if __name__ == "__main__":

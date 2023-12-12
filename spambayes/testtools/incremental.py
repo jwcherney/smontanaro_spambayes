@@ -280,8 +280,8 @@ def guess_corrected(which, test, guess, actual, msg):
                     spam_to_ham[which] = [msg]
     return guess[0]
 
-
-
+def cmp(a, b):
+    return (a > b) - (a < b) 
 
 def main():
     group_action = None
@@ -398,9 +398,9 @@ def main():
     for j in range(0, nsets):
         if which is not None and j != which:
             continue
-        print('Set %d' % (j + 1))
+        print(('Set %d' % (j + 1)))
         for k in range(0, len(nham_tested[j])):
-            print('%d %d %d %d %d %d %d %d %d %d' % (
+            print(('%d %d %d %d %d %d %d %d %d %d' % (
                 nham_tested[j][k],
                 nham_trained[j][k],
                 nham_right[j][k],
@@ -411,7 +411,7 @@ def main():
                 nspam_right[j][k],
                 nspam_wrong[j][k],
                 nspam_unsure[j][k]
-            ))
+            )))
         print()
 
     print('$ end')

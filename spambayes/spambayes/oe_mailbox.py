@@ -651,7 +651,7 @@ class OEMsgStream(msgs.MsgStream):
     def produce(self):
         if self.keep is None:
             for dbx in self.directories:
-                folder = convertToMbox(file(dbx))
+                folder = convertToMbox(open(dbx))
                 all = folder.split("\nFrom ") # XXX Is this right?
                 count = 0
                 for msg in all:
@@ -663,7 +663,7 @@ class OEMsgStream(msgs.MsgStream):
         # in such a way that we'll get the same result each time this is
         # called on the same directory list.
         for directory in self.directories:
-            folder = convertToMbox(file(dbx))
+            folder = convertToMbox(open(dbx))
             all = folder.split("\nFrom ") # XXX Is this right?
             random.seed(hash(max(all)) ^ SEED) # reproducible across calls
             random.shuffle(all)

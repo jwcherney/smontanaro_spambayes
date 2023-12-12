@@ -11,7 +11,7 @@ import getopt
 
 from spambayes import  mboxutils
 from spambayes.FileCorpus import FileCorpus, FileMessageFactory, GzipFileMessageFactory
-from spambayes.Options import options
+from spambayes.Options import options, get_pathname_option
 
 def usage():
     print(__doc__)
@@ -80,12 +80,12 @@ def main(argv):
     for row in range(size):
         line = ''.join(graph[row])
         if row == 0:
-            print(line + " %d" % count)
+            print((line + " %d" % count))
         elif row == (count - successful) // scale:
-            print(line + " %d" % successful)
+            print((line + " %d" % successful))
         else:
             print(line)
-    print(" " + "_" * (size+2))
+    print((" " + "_" * (size+2)))
 
 if __name__ == '__main__':
     main(sys.argv[1:])

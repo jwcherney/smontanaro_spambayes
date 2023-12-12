@@ -113,7 +113,7 @@ def sort(seq):
 def main(args):
     global FMT
 
-    print(options.display())
+    print((options.display()))
 
     FMT = "unix"
     NSETS = 10
@@ -141,8 +141,8 @@ def main(args):
         nham = min(nham, MAXMSGS)
         nspam = min(nspam, MAXMSGS)
 
-    print("ham", ham, nham)
-    print("spam", spam, nspam)
+    print(("ham", ham, nham))
+    print(("spam", spam, nspam))
 
     ihams = list(map(tuple, randindices(nham, NSETS)))
     ispams = list(map(tuple, randindices(nspam, NSETS)))

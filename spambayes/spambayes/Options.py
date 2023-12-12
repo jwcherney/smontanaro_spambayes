@@ -20,7 +20,7 @@ To Do:
 import sys, os
 
 try:
-    _
+    _ # pyright: ignore [reportUndefinedVariable]
 except NameError:
     _ = lambda arg: arg
 

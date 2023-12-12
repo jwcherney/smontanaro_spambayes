@@ -221,7 +221,7 @@ def main(args):
         else:
             for f in movethese:
                 if confirm:
-                    print(file(os.path.join(resdir, f)).read())
+                    print(open(os.path.join(resdir, f)).read())
                     ok = input('good enough? ').lower()
                     if not ok.startswith('y'):
                         continue

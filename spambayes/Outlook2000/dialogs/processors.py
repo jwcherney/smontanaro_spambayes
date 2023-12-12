@@ -7,7 +7,8 @@
 import win32gui, win32api, win32con
 import commctrl
 import struct, array
-from dlgutils import *
+from .dlgutils import *
+from gettext import gettext
 
 # Cache our leaky bitmap handles
 bitmap_handles = {}
@@ -43,7 +44,7 @@ class ControlProcessor:
     def GetMessages(self):
         return []
     def OnMessage(self, msg, wparam, lparam):
-        raise RuntimeError, "I don't hook any messages, so I shouldn't be called"
+        raise RuntimeError("I don't hook any messages, so I shouldn't be called")
     def OnOptionChanged(self, option):
         pass
     def OnRButtonUp(self, wparam, lparam):
@@ -54,10 +55,10 @@ class ImageProcessor(ControlProcessor):
         rcp = self.window.manager.dialog_parser;
         bmp_id = int(win32gui.GetWindowText(self.GetControl()))
 
-        if bitmap_handles.has_key(bmp_id):
+        if bmp_id in bitmap_handles:
             handle = bitmap_handles[bmp_id]
         else:
-            import resources
+            from . import resources
             mod_handle, mod_bmp, extra_flags = resources.GetImageParamsFromBitmapID(rcp, bmp_id)
             load_flags = extra_flags|win32con.LR_COLOR|win32con.LR_SHARED
             handle = win32gui.LoadImage(mod_handle, mod_bmp,
@@ -79,7 +80,7 @@ class CloseButtonProcessor(ButtonProcessor):
     def OnClicked(self, id):
         problem = self.window.manager.GetDisabledReason()
         if problem:
-            q = _("There appears to be a problem with SpamBayes' configuration" \
+            q = gettext("There appears to be a problem with SpamBayes' configuration" \
                 "\r\nIf you do not fix this problem, SpamBayes will be" \
                 " disabled.\r\n\r\n%s" \
                 "\r\n\r\nDo you wish to re-configure?") % (problem,)
@@ -87,7 +88,7 @@ class CloseButtonProcessor(ButtonProcessor):
                 return
         win32gui.EndDialog(self.window.hwnd, id)
     def GetPopupHelpText(self, ctrlid):
-        return _("Closes this dialog")
+        return gettext("Closes this dialog")
 
 class CommandButtonProcessor(ButtonProcessor):
     def __init__(self, window, control_ids, func, args):

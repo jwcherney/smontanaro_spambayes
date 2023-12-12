@@ -138,7 +138,7 @@ def table():
     for filename in fileargs:
         filename = windowsfy(filename)
         (htest, stest, fp, fn, un, fpp, fnp, unp, cost, bestcost,
-         hamdevall, spamdevall) = suck(file(filename))
+         hamdevall, spamdevall) = suck(open(filename))
         if filename.endswith('.txt'):
             filename = filename[:-4]
         filename = filename[filename.rfind('/')+1:]

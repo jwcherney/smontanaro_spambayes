@@ -141,6 +141,8 @@ from spambayes.ImapUI import IMAPUserInterface, LoginFailure
 
 from spambayes.Version import get_current_version
 
+from imaplib import IMAP4, Time2Internaldate
+
 try:
     if options["imap", "use_ssl"]:
         BaseIMAP = imaplib.IMAP4_SSL
@@ -809,7 +811,9 @@ class IMAPFolder:
         """Two folders are equal if their names are equal."""
         if obj is None:
             return False
-        return cmp(self.name, obj.name)
+        a = self.name
+        b = obj.name
+        return (a > b) - (a < b)
 
     def __iter__(self):
         """Iterate through the messages in this IMAP folder."""

@@ -1,6 +1,6 @@
-from __future__ import generators
 
-import cPickle
+
+import pickle
 import os
 import sys
 import errno
@@ -10,7 +10,8 @@ import traceback
 import operator
 import win32api, win32con, win32gui
 
-import timer, thread
+import timer, _thread
+from gettext import gettext
 
 import win32com.client
 import win32com.client.gencache
@@ -40,7 +41,7 @@ def _DoMessage(message, title, flags):
 
 def ReportError(message, title = None):
     import traceback
-    print "ERROR:", repr(message)
+    print("ERROR:", repr(message))
     if sys.exc_info()[0] is not None:
         traceback.print_exc()
     if title is None: title = "SpamBayes"
@@ -132,8 +133,6 @@ def import_core_spambayes_stuff(ini_filenames):
     # Convert if necessary.
     use_names = []
     for name in ini_filenames:
-        if isinstance(name, unicode):
-            name = name.encode(filesystem_encoding)
         use_names.append(name)
     os.environ["BAYESCUSTOMIZE"] = os.pathsep.join(use_names)
     from spambayes import classifier
@@ -157,7 +156,7 @@ def SavePickle(what, filename):
     temp_filename = filename + ".tmp"
     file = open(temp_filename,"wb")
     try:
-        cPickle.dump(what, file, 1)
+        pickle.dump(what, file, 1)
     finally:
         file.close()
     # now rename to the correct file.
@@ -175,15 +174,13 @@ def SavePickle(what, filename):
 class BasicStorageManager:
     db_extension = None # for pychecker - overwritten by subclass
     def __init__(self, bayes_base_name, mdb_base_name):
-        self.bayes_filename = bayes_base_name.encode(filesystem_encoding) + \
-                              self.db_extension
-        self.mdb_filename = mdb_base_name.encode(filesystem_encoding) + \
-                            self.db_extension
+        self.bayes_filename = bayes_base_name + self.db_extension
+        self.mdb_filename = mdb_base_name + self.db_extension
     def new_bayes(self):
         # Just delete the file and do an "open"
         try:
             os.unlink(self.bayes_filename)
-        except EnvironmentError, e:
+        except EnvironmentError as e:
             if e.errno != errno.ENOENT: raise
         return self.open_bayes()
     def store_bayes(self, bayes):
@@ -195,7 +192,7 @@ class BasicStorageManager:
     def open_mdb(self):
         # MessageInfo storage types may lag behind, so use pickle if the
         # matching type isn't available.
-        if self.klass in bayes_message._storage_types.keys():
+        if self.klass in list(bayes_message._storage_types.keys()):
             return bayes_message.open_storage(self.mdb_filename, self.klass)
         return bayes_message.open_storage(self.mdb_filename, "pickle")
     def store_mdb(self, mdb):
@@ -217,7 +214,7 @@ class DBStorageManager(BasicStorageManager):
     def new_mdb(self):
         try:
             os.unlink(self.mdb_filename)
-        except EnvironmentError, e:
+        except EnvironmentError as e:
             if e.errno != errno.ENOENT: raise
         return self.open_mdb()
     def is_incremental(self):
@@ -241,17 +238,17 @@ class ClassifierData:
 
     def Load(self):
         import time
-        start = time.clock()
+        start = time.perf_counter()
         bayes = message_db = None
         # Exceptions must be caught by caller.
         # file-not-found handled gracefully by storage.
         bayes = self.db_manager.open_bayes()
-        fname = self.db_manager.bayes_filename.encode("mbcs", "replace")
-        print "Loaded bayes database from '%s'" % (fname,)
+        fname = self.db_manager.bayes_filename
+        print("Loaded bayes database from '%s'" % (fname,))
 
         message_db = self.db_manager.open_mdb()
-        fname = self.db_manager.mdb_filename.encode("mbcs", "replace")
-        print "Loaded message database from '%s'" % (fname,)
+        fname = self.db_manager.mdb_filename
+        print("Loaded message database from '%s'" % (fname,))
 
         self.logger.LogDebug(0, "Bayes database initialized with "
                    "%d spam and %d good messages" % (bayes.nspam, bayes.nham))
@@ -264,7 +261,7 @@ class ClassifierData:
         self.bayes = bayes
         self.message_db = message_db
         self.dirty = False
-        self.logger.LogDebug(1, "Loaded databases in %gms" % ((time.clock()-start)*1000))
+        self.logger.LogDebug(1, "Loaded databases in %gms" % ((time.perf_counter()-start)*1000))
 
     def InitNew(self):
         if self.bayes is not None:
@@ -284,27 +281,27 @@ class ClassifierData:
             else:
                 self.logger.LogDebug(1, "Bayes database is not dirty - not writing")
         else:
-            print "Using a slow database - not saving after incremental train"
+            print("Using a slow database - not saving after incremental train")
 
     def Save(self):
         import time
-        start = time.clock()
+        start = time.perf_counter()
         bayes = self.bayes
 
         if self.logger.verbose:
-            print "Saving bayes database with %d spam and %d good messages" %\
-                   (bayes.nspam, bayes.nham)
-            print " ->", self.db_manager.bayes_filename
+            print("Saving bayes database with %d spam and %d good messages" %\
+                   (bayes.nspam, bayes.nham))
+            print(" ->", self.db_manager.bayes_filename)
         self.db_manager.store_bayes(self.bayes)
         if self.logger.verbose:
-            print " ->", self.db_manager.mdb_filename
+            print(" ->", self.db_manager.mdb_filename)
         self.db_manager.store_mdb(self.message_db)
         self.dirty = False
-        self.logger.LogDebug(1, "Saved databases in %gms" % ((time.clock()-start)*1000))
+        self.logger.LogDebug(1, "Saved databases in %gms" % ((time.perf_counter()-start)*1000))
 
     def Close(self):
         if self.dirty and self.bayes:
-            print "Warning: ClassifierData closed while Bayes database dirty"
+            print("Warning: ClassifierData closed while Bayes database dirty")
         if self.db_manager:
             self.db_manager.close_bayes(self.bayes)
             self.db_manager.close_mdb(self.message_db)
@@ -339,14 +336,14 @@ def GetStorageManagerClass():
     if use_db not in available:
         # User is trying to use something fancy which isn't available.
         # Fall back on bsddb.
-        print use_db, "storage type not available.  Using bsddb."
+        print(use_db, "storage type not available.  Using bsddb.")
         use_db = "dbm"
     return available[use_db]
 
 # Our main "bayes manager"
 class BayesManager:
     def __init__(self, config_base="default", outlook=None, verbose=0):
-        self.owner_thread_ident = thread.get_ident() # check we aren't multi-threaded
+        self.owner_thread_ident = _thread.get_ident() # check we aren't multi-threaded
         self.never_configured = True
         self.reported_error_map = {}
         self.reported_startup_error = False
@@ -387,16 +384,16 @@ class BayesManager:
                 value = value.decode(filesystem_encoding)
             except AttributeError: # May already be Unicode
                 pass
-            assert isinstance(value, types.UnicodeType), "%r should be a unicode" % value
+            assert isinstance(value, str), "%r should be a unicode" % value
             try:
                 if not os.path.isdir(value):
                     os.makedirs(value)
                 assert os.path.isdir(value), "just made the *ucker"
                 value = os.path.abspath(value)
             except os.error:
-                print "The configuration files have specified a data " \
+                print("The configuration files have specified a data " \
                       "directory of", repr(value), "but it is not valid. " \
-                      "Using default."
+                      "Using default.")
                 value = None
         if value:
             self.data_directory = value
@@ -468,19 +465,19 @@ class BayesManager:
     def LogDebug(self, level, *args):
         if self.verbose >= level:
             for arg in args[:-1]:
-                print arg,
-            print args[-1]
+                print(arg, end=' ')
+            print(args[-1])
 
     def ReportError(self, message, title = None):
         if self.test_suite_running:
-            print "ReportError:", repr(message)
-            print "(but test suite running - not reported)"
+            print("ReportError:", repr(message))
+            print("(but test suite running - not reported)")
             return
         ReportError(message, title)
     def ReportInformation(self, message, title=None):
         if self.test_suite_running:
-            print "ReportInformation:", repr(message)
-            print "(but test suite running - not reported)"
+            print("ReportInformation:", repr(message))
+            print("(but test suite running - not reported)")
             return
         ReportInformation(message, title)
     def AskQuestion(self, message, title=None):
@@ -494,7 +491,7 @@ class BayesManager:
     def ReportFatalStartupError(self, message):
         if not self.reported_startup_error:
             self.reported_startup_error = True
-            full_message = _(\
+            full_message = gettext(\
                 "There was an error initializing the Spam plugin.\r\n\r\n" \
                 "Spam filtering has been disabled.  Please re-configure\r\n" \
                 "and re-enable this plugin\r\n\r\n" \
@@ -506,19 +503,19 @@ class BayesManager:
         else:
             # We have reported the error, but for the sake of the log, we
             # still want it logged there.
-            print "ERROR:", repr(message)
+            print("ERROR:", repr(message))
             traceback.print_exc()
 
     def ReportErrorOnce(self, msg, title = None, key = None):
         if key is None: key = msg
         # Always print the message and traceback.
         if self.test_suite_running:
-            print "ReportErrorOnce:", repr(msg)
-            print "(but test suite running - not reported)"
+            print("ReportErrorOnce:", repr(msg))
+            print("(but test suite running - not reported)")
             return
-        print "ERROR:", repr(msg)
+        print("ERROR:", repr(msg))
         if key in self.reported_error_map:
-            print "(this error has already been reported - not displaying it again)"
+            print("(this error has already been reported - not displaying it again)")
         else:
             traceback.print_exc()
             self.reported_error_map[key] = True
@@ -618,15 +615,15 @@ class BayesManager:
                        True, # Add to folder
                        format)
                 outlook_message.Save()
-            except pythoncom.com_error, details:
+            except pythoncom.com_error as details:
                 if msgstore.IsReadOnlyCOMException(details):
                     self.LogDebug(1, "The folder '%s' is read-only - user "
                                      "property can't be added" % (folder_name,))
                 else:
-                    print "Warning: failed to create the Outlook " \
+                    print("Warning: failed to create the Outlook " \
                           "user-property in folder '%s'" \
-                          % (folder_name,)
-                    print "", details
+                          % (folder_name,))
+                    print("", details)
             msgstore_folder.DeleteMessages((message,))
             # Check our DoesFolderHaveOutlookField logic holds up.
             if not msgstore_folder.DoesFolderHaveOutlookField(field_name):
@@ -659,7 +656,7 @@ class BayesManager:
         try:
             self.options.merge_file(filename)
         except:
-            msg = _("The configuration file named below is invalid.\r\n" \
+            msg = gettext("The configuration file named below is invalid.\r\n" \
                     "Please either correct or remove this file\r\n\r\n" \
                     "Filename: ") + filename
             self.ReportError(msg)
@@ -674,10 +671,10 @@ class BayesManager:
             # should only happen in source-code versions - older win32alls can't
             # determine this.
             profile_name = "unknown_profile"
-            print "*** NOTE: It appears you are running the source-code version of"
-            print "* SpamBayes, and running a win32all version pre 154."
-            print "* If you work with multiple Outlook profiles, it is recommended"
-            print "* you upgrade - see http://starship.python.net/crew/mhammond"""
+            print("*** NOTE: It appears you are running the source-code version of")
+            print("* SpamBayes, and running a win32all version pre 154.")
+            print("* If you work with multiple Outlook profiles, it is recommended")
+            print("* you upgrade - see http://starship.python.net/crew/mhammond""")
         return profile_name
 
     def LoadConfig(self):
@@ -702,9 +699,9 @@ class BayesManager:
         config.MigrateOptions(self.options)
 
         if self.verbose > 1:
-            print "Dumping loaded configuration:"
-            print self.options.display()
-            print "-- end of configuration --"
+            print("Dumping loaded configuration:")
+            print(self.options.display())
+            print("-- end of configuration --")
 
     def MigrateOldPickle(self):
         assert self.config is not None, "Must have a config"
@@ -715,14 +712,14 @@ class BayesManager:
         except IOError:
             self.LogDebug(1, "No old pickle file to migrate")
             return
-        print "Migrating old pickle '%s'" % pickle_filename
+        print("Migrating old pickle '%s'" % pickle_filename)
         try:
             try:
-                old_config = cPickle.load(f)
+                old_config = pickle.load(f)
             except:
-                print "FAILED to load old pickle"
+                print("FAILED to load old pickle")
                 traceback.print_exc()
-                msg = _("There was an error loading your old\r\n" \
+                msg = gettext("There was an error loading your old\r\n" \
                         "SpamBayes configuration file.\r\n\r\n" \
                         "It is likely that you will need to re-configure\r\n" \
                         "SpamBayes before it will function correctly.")
@@ -733,14 +730,14 @@ class BayesManager:
         finally:
             f.close()
         if old_config is not None:
-            for section, items in old_config.__dict__.items():
-                print " migrating section '%s'" % (section,)
+            for section, items in list(old_config.__dict__.items()):
+                print(" migrating section '%s'" % (section,))
                 # exactly one value wasn't in a section - now in "general"
                 dict = getattr(items, "__dict__", None)
                 if dict is None:
                     dict = {section: items}
                     section = "general"
-                for name, value in dict.items():
+                for name, value in list(dict.items()):
                     sect = getattr(self.config, section)
                     setattr(sect, name, value)
         # Save the config, then delete the pickle so future attempts to
@@ -751,7 +748,7 @@ class BayesManager:
             self.LogDebug(1, "pickle migration removing '%s'" % pickle_filename)
             os.remove(pickle_filename)
         except os.error:
-            msg = _("There was an error migrating and removing your old\r\n" \
+            msg = gettext("There was an error migrating and removing your old\r\n" \
                     "SpamBayes configuration file.  Configuration changes\r\n" \
                     "you make are unlikely to be reflected next\r\n" \
                     "time you start Outlook.  Please try rebooting.")
@@ -769,12 +766,12 @@ class BayesManager:
 
         # Update our runtime verbosity from the options.
         self.verbose = self.config.general.verbose
-        print "Saving configuration ->", self.config_filename.encode("mbcs", "replace")
+        print("Saving configuration ->", self.config_filename)
         assert self.config and self.options, "Have no config to save!"
         if self.verbose > 1:
-            print "Dumping configuration to save:"
-            print self.options.display()
-            print "-- end of configuration --"
+            print("Dumping configuration to save:")
+            print(self.options.display())
+            print("-- end of configuration --")
         self.options.update_file(self.config_filename)
 
     def Save(self):
@@ -817,7 +814,7 @@ class BayesManager:
         except AssertionError:
             # See bug 706520 assert fails in classifier
             # For now, just tell the user.
-            msg = _("It appears your SpamBayes training database is corrupt.\r\n\r\n" \
+            msg = gettext("It appears your SpamBayes training database is corrupt.\r\n\r\n" \
                     "We are working on solving this, but unfortunately you\r\n" \
                     "must re-train the system via the SpamBayes manager.")
             self.ReportErrorOnce(msg)
@@ -832,12 +829,12 @@ class BayesManager:
         config = self.config.filter
         ok_to_enable = operator.truth(config.watch_folder_ids)
         if not ok_to_enable:
-            return _("You must define folders to watch for new messages.  " \
+            return gettext("You must define folders to watch for new messages.  " \
                      "Select the 'Filtering' tab to define these folders.")
 
         ok_to_enable = operator.truth(config.spam_folder_id)
         if not ok_to_enable:
-            return _("You must define the folder to receive your certain spam.  " \
+            return gettext("You must define the folder to receive your certain spam.  " \
                      "Select the 'Filtering' tab to define this folder.")
 
         # Check that the user hasn't selected the same folder as both
@@ -847,24 +844,24 @@ class BayesManager:
         if config.unsure_folder_id:
             try:
                 unsure_folder = ms.GetFolder(config.unsure_folder_id)
-            except ms.MsgStoreException, details:
-                return _("The unsure folder is invalid: %s") % (details,)
+            except ms.MsgStoreException as details:
+                return gettext("The unsure folder is invalid: %s") % (details,)
         try:
             spam_folder = ms.GetFolder(config.spam_folder_id)
-        except ms.MsgStoreException, details:
-            return _("The spam folder is invalid: %s") % (details,)
+        except ms.MsgStoreException as details:
+            return gettext("The spam folder is invalid: %s") % (details,)
         if ok_to_enable:
             for folder in ms.GetFolderGenerator(config.watch_folder_ids,
                                                 config.watch_include_sub):
                 bad_folder_type = None
                 if unsure_folder is not None and unsure_folder == folder:
-                    bad_folder_type = _("unsure")
+                    bad_folder_type = gettext("unsure")
                     bad_folder_name = unsure_folder.GetFQName()
                 if spam_folder == folder:
-                    bad_folder_type = _("spam")
+                    bad_folder_type = gettext("spam")
                     bad_folder_name = spam_folder.GetFQName()
                 if bad_folder_type is not None:
-                    return _("You can not specify folder '%s' as both the " \
+                    return gettext("You can not specify folder '%s' as both the " \
                              "%s folder, and as being watched.") \
                              % (bad_folder_name, bad_folder_type)
         return None
@@ -894,8 +891,8 @@ class BayesManager:
 
     def ShowHtml(self,url):
         """Displays the main SpamBayes documentation in your Web browser"""
-        import sys, os, urllib
-        if urllib.splittype(url)[0] is None: # just a file spec
+        import sys, os, urllib.request, urllib.parse, urllib.error
+        if urllib.parse.splittype(url)[0] is None: # just a file spec
             if hasattr(sys, "frozen"):
                 # New binary is in ../docs/outlook relative to executable.
                 fname = os.path.join(os.path.dirname(sys.argv[0]),
@@ -938,9 +935,9 @@ class BayesManager:
         self._DoStartNotifyTimer(delay)
         
     def _DoStartNotifyTimer(self, delay):
-        assert thread.get_ident() == self.owner_thread_ident
+        assert _thread.get_ident() == self.owner_thread_ident
         assert self.notify_timer_id is None, "Shouldn't start a timer when already have one"
-        assert isinstance(delay, types.FloatType), "Timer values are float seconds"
+        assert isinstance(delay, float), "Timer values are float seconds"
         # And start a new timer.
         assert delay, "No delay means no timer!"
         delay = int(delay*1000) # convert to ms.
@@ -948,7 +945,7 @@ class BayesManager:
         self.LogDebug(1, "Notify timer started - id=%d, delay=%d" % (self.notify_timer_id, delay))
         
     def _KillNotifyTimer(self):
-        assert thread.get_ident() == self.owner_thread_ident
+        assert _thread.get_ident() == self.owner_thread_ident
         if self.notify_timer_id is not None:
             timer.kill_timer(self.notify_timer_id)
             self.LogDebug(2, "The notify timer with id=%d was stopped" % self.notify_timer_id)
@@ -956,7 +953,7 @@ class BayesManager:
         
     def _NotifyTimerFunc(self, event, time):
         # Kill the timer first
-        assert thread.get_ident() == self.owner_thread_ident
+        assert _thread.get_ident() == self.owner_thread_ident
         self.LogDebug(1, "The notify timer with id=%s fired" % self.notify_timer_id)
         self._KillNotifyTimer()
         
@@ -999,7 +996,7 @@ def main(verbose_level = 1):
     return 0
 
 def usage():
-    print "Usage: manager [-v ...]"
+    print("Usage: manager [-v ...]")
     sys.exit(1)
 
 if __name__=='__main__':

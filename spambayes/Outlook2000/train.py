@@ -7,6 +7,7 @@
 import sys
 import traceback
 from win32com.mapi import mapi
+from gettext import gettext
 
 # Note our Message Database uses PR_SEARCH_KEY, *not* PR_ENTRYID, as the
 # latter changes after a Move operation - see msgstore.py
@@ -79,14 +80,14 @@ def train_folder(f, isspam, cdata, progress):
             if train_message(message, isspam, cdata):
                 num_added += 1
         except:
-            print "Error training message '%s'" % (message,)
+            print("Error training message '%s'" % (message,))
             traceback.print_exc()
         num += 1
-    print "Checked", num, "in folder", f.name, "-", num_added, "new entries found."
+    print("Checked", num, "in folder", f.name, "-", num_added, "new entries found.")
 
 
 def real_trainer(classifier_data, config, message_store, progress):
-    progress.set_status(_("Counting messages"))
+    progress.set_status(gettext("Counting messages"))
 
     num_msgs = 0
     for f in message_store.GetFolderGenerator(config.training.ham_folder_ids, config.training.ham_include_sub):
@@ -97,13 +98,13 @@ def real_trainer(classifier_data, config, message_store, progress):
     progress.set_max_ticks(num_msgs+3)
 
     for f in message_store.GetFolderGenerator(config.training.ham_folder_ids, config.training.ham_include_sub):
-        progress.set_status(_("Processing good folder '%s'") % (f.name,))
+        progress.set_status(gettext("Processing good folder '%s'") % (f.name,))
         train_folder(f, 0, classifier_data, progress)
         if progress.stop_requested():
             return
 
     for f in message_store.GetFolderGenerator(config.training.spam_folder_ids, config.training.spam_include_sub):
-        progress.set_status(_("Processing spam folder '%s'") % (f.name,))
+        progress.set_status(gettext("Processing spam folder '%s'") % (f.name,))
         train_folder(f, 1, classifier_data, progress)
         if progress.stop_requested():
             return
@@ -114,7 +115,7 @@ def real_trainer(classifier_data, config, message_store, progress):
     # Completed training - save the database
     # Setup the next "stage" in the progress dialog.
     progress.set_max_ticks(1)
-    progress.set_status(_("Writing the database..."))
+    progress.set_status(gettext("Writing the database..."))
     classifier_data.Save()
 
 # Called back from the dialog to do the actual training.
@@ -123,7 +124,7 @@ def trainer(mgr, config, progress):
     rescore = config.training.rescore
 
     if not config.training.ham_folder_ids and not config.training.spam_folder_ids:
-        progress.error(_("You must specify at least one spam or one good folder"))
+        progress.error(gettext("You must specify at least one spam or one good folder"))
         return
 
     if rebuild:
@@ -148,9 +149,9 @@ def trainer(mgr, config, progress):
     # the message back.)
     # Saving is really slow sometimes, but we only have 1 tick for that anyway
     if rescore:
-        stages = (_("Training"), .3), (_("Saving"), .1), (_("Scoring"), .6)
+        stages = (gettext("Training"), .3), (gettext("Saving"), .1), (gettext("Scoring"), .6)
     else:
-        stages = (_("Training"), .9), (_("Saving"), .1)
+        stages = (gettext("Training"), .9), (gettext("Saving"), .1)
     progress.set_stages(stages)
 
     real_trainer(classifier_data, config, mgr.message_store, progress)
@@ -184,11 +185,11 @@ def trainer(mgr, config, progress):
         filter.filterer(mgr, mgr.config, progress)
 
     bayes = classifier_data.bayes
-    progress.set_status(_("Completed training with %d spam and %d good messages") % (bayes.nspam, bayes.nham))
+    progress.set_status(gettext("Completed training with %d spam and %d good messages") % (bayes.nspam, bayes.nham))
 
 
 def main():
-    print "Sorry - we don't do anything here any more"
+    print("Sorry - we don't do anything here any more")
 
 if __name__ == "__main__":
     main()

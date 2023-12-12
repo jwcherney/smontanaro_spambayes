@@ -257,8 +257,8 @@ class BayesSMTPProxyListener(Dibbler.Listener):
         proxyArgs = (serverName, serverPort, trainer)
         Dibbler.Listener.__init__(self, proxyPort, BayesSMTPProxy,
                                   proxyArgs)
-        print('SMTP Listener on port %s is proxying %s:%d' % \
-               (_addressPortStr(proxyPort), serverName, serverPort))
+        print(('SMTP Listener on port %s is proxying %s:%d' % \
+               (_addressPortStr(proxyPort), serverName, serverPort)))
 
 
 class BayesSMTPProxy(SMTPProxyBase):
@@ -445,9 +445,9 @@ class SMTPTrainer:
     def train_cached_message(self, id, isSpam):
         if not self.train_message_in_pop3proxy_cache(id, isSpam) and \
            not self.train_message_on_imap_server(id, isSpam):
-            print("Could not find message (%s); perhaps it was " \
+            print(("Could not find message (%s); perhaps it was " \
                   "deleted from the POP3Proxy cache or the IMAP " \
-                  "server.  This means that no training was done." % (id, ))
+                  "server.  This means that no training was done." % (id, )))
 
     def train_message_in_pop3proxy_cache(self, id, isSpam):
         if self.state is None:
@@ -503,8 +503,8 @@ def LoadServerInfo():
         splitPorts = options["smtpproxy", "listen_ports"]
         proxyPorts = list(map(_addressAndPort, splitPorts))
     if len(servers) != len(proxyPorts):
-        print("smtpproxy:remote_servers & smtpproxy:listen_ports are " + \
-              "different lengths!")
+        print(("smtpproxy:remote_servers & smtpproxy:listen_ports are " + \
+              "different lengths!"))
         sys.exit()
     return servers, proxyPorts
 

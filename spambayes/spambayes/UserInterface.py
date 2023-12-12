@@ -107,7 +107,7 @@ class UserInterfaceServer(Dibbler.HTTPServer):
 
     def __init__(self, uiPort):
         Dibbler.HTTPServer.__init__(self, uiPort)
-        print(_('User interface url is http://localhost:%d/') % (uiPort))
+        print((_('User interface url is http://localhost:%d/') % (uiPort)))
 
     def requestAuthenticationMode(self):
         return options["html_ui", "http_authentication"]
@@ -734,7 +734,7 @@ class UserInterface(BaseUserInterface):
                 valid_input = options.valid_input(sect, opt)
 
             # Populate the rows with the details and add them to the table.
-            if isinstance(valid_input, (str,)):
+            if isinstance(valid_input, str):
                 # we provide a text input
                 newConfigRow1 = configTextRow1.clone()
                 newConfigRow1.label = options.display_name(sect, opt)
@@ -1110,7 +1110,7 @@ class UserInterface(BaseUserInterface):
         # For guessing MIME type based on file name extension
         import mimetypes
 
-        from email import encoders
+        from email import Encoders
         from email.mime.base import MIMEBase
         from email.mime.audio import MIMEAudio
         from email.mime.multipart import MIMEMultipart
@@ -1321,7 +1321,7 @@ class UserInterface(BaseUserInterface):
             # Apart from any message headers, we may also wish to display
             # the message score, and the time the message was received.
             if options["html_ui", "display_score"]:
-                if isinstance(messageInfo.score, (str,)):
+                if isinstance(messageInfo.score, str):
                     # Presumably either "?" or "Err".
                     row.score_ = messageInfo.score
                 else:
@@ -1352,8 +1352,8 @@ class UserInterface(BaseUserInterface):
 
     def _contains(self, a, b, ignore_case=False):
         """Return true if substring b is part of string a."""
-        assert isinstance(a, (str,))
-        assert isinstance(b, (str,))
+        assert isinstance(a, str)
+        assert isinstance(b, str)
         if ignore_case:
             a = a.lower()
             b = b.lower()

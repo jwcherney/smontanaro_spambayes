@@ -212,7 +212,7 @@ def as_string(msg, unixfrom=False):
         headers = []
         if unixfrom:
             headers.append(msg.get_unixfrom())
-        for (hdr, val) in msg.items():
+        for (hdr, val) in list(msg.items()):
             headers.append("%s: %s" % (hdr, val))
         headers.append("X-Spambayes-Exception: %s" % excstr)
         parts = ["%s\n" % "\n".join(headers)]

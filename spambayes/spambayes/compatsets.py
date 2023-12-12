@@ -100,7 +100,7 @@ class BaseSet:
 
         This is the keys iterator for the underlying dict.
         """
-        return iter(self._data.keys())
+        return iter(list(self._data.keys()))
 
     # Equality comparisons using the underlying dicts
 
@@ -177,7 +177,7 @@ class BaseSet:
             little, big = self, other
         else:
             little, big = other, self
-        common = list(filter(big._data.has_key, iter(little._data.keys())))
+        common = list(filter(big._data.has_key, iter(list(little._data.keys()))))
         return self.__class__(common)
 
     def intersection(self, other):

@@ -7,6 +7,6 @@ import sys
 import os
 
 if sys.argv[1] == '.':
-    print '.'
+    print('.')
 else:
-    print os.sep.join(['..'] * len(sys.argv[1].split(os.sep)))
+    print((os.sep.join(['..'] * len(sys.argv[1].split(os.sep)))))

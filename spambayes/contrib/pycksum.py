@@ -40,7 +40,7 @@ import sys
 import email.parser
 import email.generator
 
-import dbm
+import dbm.ndbm
 import re
 import time
 import io
@@ -106,7 +106,7 @@ def generate_checksum(msg):
 def save_checksum(cksum, f):
     pieces = cksum.split('.')
     result = 1
-    db = dbm.open(f, "c")
+    db = dbm.ndbm.open(f, "c")
     maxdblen = 2**14
     # consider the first two pieces, the middle two pieces and the last two
     # pieces - one or more will likely eliminate attempts at disrupting the

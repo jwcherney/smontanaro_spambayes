@@ -411,7 +411,7 @@ class _TreeGenerator:
         if self._pendingText:
             self._collapsePendingText()
         newAttributes = {}
-        for name, value in attributes.items():
+        for name, value in list(attributes.items()):
             newAttributes[str(name)] = self._unmungeEntities(str(value))
         newNode = _ElementNode(self._currentNode, str(tag), newAttributes)
         self._currentNode.children.append(newNode)
@@ -1127,4 +1127,4 @@ def test():
 if __name__ == '__main__':
     failed, total = test()
     if failed == 0:     # Else `doctest.testmod` prints the failures.
-        print("All %d tests passed." % total)
+        print(("All %d tests passed." % total))

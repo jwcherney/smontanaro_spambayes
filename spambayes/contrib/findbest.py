@@ -101,8 +101,8 @@ def score(unsure, h, cls, scores, msgids=None, skipspam=False):
 
     spam_cutoff = options["Categorization", "spam_cutoff"]
 
-    # compute a base - number of messages in unsure already in the
-    # region of interest
+    # compute a base - number of messages in unsure already
+    # in the region of interest
     n = 0
     total = 0.0
     okalready = set()

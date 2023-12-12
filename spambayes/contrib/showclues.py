@@ -162,4 +162,4 @@ if __name__ == "__main__":
     for fname in args:
         mbox = mboxutils.getmbox(fname)
         for msg in mbox:
-            print(ShowClues(bayes, msg, markup))
+            print((ShowClues(bayes, msg, markup)))

@@ -133,10 +133,10 @@ f1n = windowsfy(f1n)
 f2n = windowsfy(f2n)
 
 (fp1, fn1, fptot1, fntot1, fpmean1, fnmean1,
- hamdev1, spamdev1, hamdevall1, spamdevall1) = suck(file(f1n))
+ hamdev1, spamdev1, hamdevall1, spamdevall1) = suck(open(f1n))
 
 (fp2, fn2, fptot2, fntot2, fpmean2, fnmean2,
- hamdev2, spamdev2, hamdevall2, spamdevall2) = suck(file(f2n))
+ hamdev2, spamdev2, hamdevall2, spamdevall2) = suck(open(f2n))
 
 print()
 print("false positive percentages")

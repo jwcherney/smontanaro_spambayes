@@ -359,7 +359,7 @@ class Actions(DispatchBaseClass):
 	def __len__(self):
 		return self._ApplyTypes_(*(80, 2, (3, 0), (), "Count", None))
 	#This class has a __len__ - this is needed so 'if object:' always returns TRUE.
-	def __nonzero__(self):
+	def __bool__(self):
 		return True
 
 class AddressEntries(DispatchBaseClass):
@@ -433,7 +433,7 @@ class AddressEntries(DispatchBaseClass):
 	def __len__(self):
 		return self._ApplyTypes_(*(80, 2, (3, 0), (), "Count", None))
 	#This class has a __len__ - this is needed so 'if object:' always returns TRUE.
-	def __nonzero__(self):
+	def __bool__(self):
 		return True
 
 class AddressEntry(DispatchBaseClass):
@@ -535,7 +535,7 @@ class AddressLists(DispatchBaseClass):
 	def __len__(self):
 		return self._ApplyTypes_(*(80, 2, (3, 0), (), "Count", None))
 	#This class has a __len__ - this is needed so 'if object:' always returns TRUE.
-	def __nonzero__(self):
+	def __bool__(self):
 		return True
 
 class ApplicationEvents:
@@ -657,7 +657,7 @@ class Attachments(DispatchBaseClass):
 	def __len__(self):
 		return self._ApplyTypes_(*(80, 2, (3, 0), (), "Count", None))
 	#This class has a __len__ - this is needed so 'if object:' always returns TRUE.
-	def __nonzero__(self):
+	def __bool__(self):
 		return True
 
 class Exception(DispatchBaseClass):
@@ -709,7 +709,7 @@ class Exceptions(DispatchBaseClass):
 	def __len__(self):
 		return self._ApplyTypes_(*(80, 2, (3, 0), (), "Count", None))
 	#This class has a __len__ - this is needed so 'if object:' always returns TRUE.
-	def __nonzero__(self):
+	def __bool__(self):
 		return True
 
 class ExplorerEvents:
@@ -1134,7 +1134,7 @@ class Links(DispatchBaseClass):
 	def __len__(self):
 		return self._ApplyTypes_(*(80, 2, (3, 0), (), "Count", None))
 	#This class has a __len__ - this is needed so 'if object:' always returns TRUE.
-	def __nonzero__(self):
+	def __bool__(self):
 		return True
 
 class MAPIFolder(DispatchBaseClass):
@@ -1263,7 +1263,7 @@ class OutlookBarGroup(DispatchBaseClass):
 	# str(ob) and int(ob) will use __call__
 	def __unicode__(self, *args):
 		try:
-			return unicode(self.__call__(*args))
+			return str(self.__call__(*args))
 		except pythoncom.com_error:
 			return repr(self)
 	def __str__(self, *args):
@@ -1372,7 +1372,7 @@ class OutlookBarShortcut(DispatchBaseClass):
 	# str(ob) and int(ob) will use __call__
 	def __unicode__(self, *args):
 		try:
-			return unicode(self.__call__(*args))
+			return str(self.__call__(*args))
 		except pythoncom.com_error:
 			return repr(self)
 	def __str__(self, *args):
@@ -1442,7 +1442,7 @@ class OutlookBarStorage(DispatchBaseClass):
 	# str(ob) and int(ob) will use __call__
 	def __unicode__(self, *args):
 		try:
-			return unicode(self.__call__(*args))
+			return str(self.__call__(*args))
 		except pythoncom.com_error:
 			return repr(self)
 	def __str__(self, *args):
@@ -1490,7 +1490,7 @@ class Pages(DispatchBaseClass):
 	def __len__(self):
 		return self._ApplyTypes_(*(80, 2, (3, 0), (), "Count", None))
 	#This class has a __len__ - this is needed so 'if object:' always returns TRUE.
-	def __nonzero__(self):
+	def __bool__(self):
 		return True
 
 class Panes(DispatchBaseClass):
@@ -1522,7 +1522,7 @@ class Panes(DispatchBaseClass):
 	def __len__(self):
 		return self._ApplyTypes_(*(80, 2, (3, 0), (), "Count", None))
 	#This class has a __len__ - this is needed so 'if object:' always returns TRUE.
-	def __nonzero__(self):
+	def __bool__(self):
 		return True
 
 class PropertyPage(DispatchBaseClass):
@@ -1590,7 +1590,7 @@ class PropertyPages(DispatchBaseClass):
 	def __len__(self):
 		return self._ApplyTypes_(*(80, 2, (3, 0), (), "Count", None))
 	#This class has a __len__ - this is needed so 'if object:' always returns TRUE.
-	def __nonzero__(self):
+	def __bool__(self):
 		return True
 
 class Recipient(DispatchBaseClass):
@@ -1682,7 +1682,7 @@ class Recipients(DispatchBaseClass):
 	def __len__(self):
 		return self._ApplyTypes_(*(80, 2, (3, 0), (), "Count", None))
 	#This class has a __len__ - this is needed so 'if object:' always returns TRUE.
-	def __nonzero__(self):
+	def __bool__(self):
 		return True
 
 class RecurrencePattern(DispatchBaseClass):
@@ -1772,7 +1772,7 @@ class Selection(DispatchBaseClass):
 	def __len__(self):
 		return self._ApplyTypes_(*(80, 2, (3, 0), (), "Count", None))
 	#This class has a __len__ - this is needed so 'if object:' always returns TRUE.
-	def __nonzero__(self):
+	def __bool__(self):
 		return True
 
 class SyncObjectEvents:
@@ -1852,7 +1852,7 @@ class SyncObjects(DispatchBaseClass):
 	def __len__(self):
 		return self._ApplyTypes_(*(80, 2, (3, 0), (), "Count", None))
 	#This class has a __len__ - this is needed so 'if object:' always returns TRUE.
-	def __nonzero__(self):
+	def __bool__(self):
 		return True
 
 class UserProperties(DispatchBaseClass):
@@ -1905,7 +1905,7 @@ class UserProperties(DispatchBaseClass):
 	def __len__(self):
 		return self._ApplyTypes_(*(80, 2, (3, 0), (), "Count", None))
 	#This class has a __len__ - this is needed so 'if object:' always returns TRUE.
-	def __nonzero__(self):
+	def __bool__(self):
 		return True
 
 class UserProperty(DispatchBaseClass):
@@ -1941,7 +1941,7 @@ class UserProperty(DispatchBaseClass):
 	# str(ob) and int(ob) will use __call__
 	def __unicode__(self, *args):
 		try:
-			return unicode(self.__call__(*args))
+			return str(self.__call__(*args))
 		except pythoncom.com_error:
 			return repr(self)
 	def __str__(self, *args):
@@ -2949,7 +2949,7 @@ class _Explorers(DispatchBaseClass):
 	def __len__(self):
 		return self._ApplyTypes_(*(80, 2, (3, 0), (), "Count", None))
 	#This class has a __len__ - this is needed so 'if object:' always returns TRUE.
-	def __nonzero__(self):
+	def __bool__(self):
 		return True
 
 class _Folders(DispatchBaseClass):
@@ -3023,7 +3023,7 @@ class _Folders(DispatchBaseClass):
 	def __len__(self):
 		return self._ApplyTypes_(*(80, 2, (3, 0), (), "Count", None))
 	#This class has a __len__ - this is needed so 'if object:' always returns TRUE.
-	def __nonzero__(self):
+	def __bool__(self):
 		return True
 
 class _IDocSiteControl(DispatchBaseClass):
@@ -3160,7 +3160,7 @@ class _Inspectors(DispatchBaseClass):
 	def __len__(self):
 		return self._ApplyTypes_(*(80, 2, (3, 0), (), "Count", None))
 	#This class has a __len__ - this is needed so 'if object:' always returns TRUE.
-	def __nonzero__(self):
+	def __bool__(self):
 		return True
 
 class _Items(DispatchBaseClass):
@@ -3262,7 +3262,7 @@ class _Items(DispatchBaseClass):
 	def __len__(self):
 		return self._ApplyTypes_(*(80, 2, (3, 0), (), "Count", None))
 	#This class has a __len__ - this is needed so 'if object:' always returns TRUE.
-	def __nonzero__(self):
+	def __bool__(self):
 		return True
 
 class _JournalItem(DispatchBaseClass):
@@ -4011,7 +4011,7 @@ class _OutlookBarGroups(DispatchBaseClass):
 	def __len__(self):
 		return self._ApplyTypes_(*(80, 2, (3, 0), (), "Count", None))
 	#This class has a __len__ - this is needed so 'if object:' always returns TRUE.
-	def __nonzero__(self):
+	def __bool__(self):
 		return True
 
 class _OutlookBarPane(DispatchBaseClass):
@@ -4042,7 +4042,7 @@ class _OutlookBarPane(DispatchBaseClass):
 	# str(ob) and int(ob) will use __call__
 	def __unicode__(self, *args):
 		try:
-			return unicode(self.__call__(*args))
+			return str(self.__call__(*args))
 		except pythoncom.com_error:
 			return repr(self)
 	def __str__(self, *args):
@@ -4092,7 +4092,7 @@ class _OutlookBarShortcuts(DispatchBaseClass):
 	def __len__(self):
 		return self._ApplyTypes_(*(80, 2, (3, 0), (), "Count", None))
 	#This class has a __len__ - this is needed so 'if object:' always returns TRUE.
-	def __nonzero__(self):
+	def __bool__(self):
 		return True
 
 class _PostItem(DispatchBaseClass):

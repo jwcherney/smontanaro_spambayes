@@ -80,7 +80,7 @@ def main():
     inputpath, outputbasepath = args
 
     infile = open(inputpath, 'rb')
-    outfiles = [file(outputbasepath + ("%d.mbox" % i), 'wb')
+    outfiles = [open(outputbasepath + ("%d.mbox" % i), 'wb')
                 for i in range(1, n+1)]
 
     mbox = mailbox.PortableUnixMailbox(infile, mboxutils.get_message)

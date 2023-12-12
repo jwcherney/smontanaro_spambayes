@@ -2,6 +2,7 @@
 import config
 import copy
 import os
+from gettext import gettext
 
 # NOTE: The Wizard works from a *complete* copy of the standard options
 # but with an extra "Wizard" section to maintain state etc for the wizard.
@@ -82,7 +83,7 @@ def _CreateFolder(manager, name, comment):
         new_folder = root.CreateFolder(name, comment, open_if_exists = True)
         return new_folder
     except:
-        msg = _("There was an error creating the folder named '%s'\r\n" \
+        msg = gettext("There was an error creating the folder named '%s'\r\n" \
                 "Please restart Outlook and try again") % name
         manager.ReportError(msg)
         return None
@@ -139,7 +140,7 @@ def CancelWizardConfig(manager, wc):
             try:
                 os.remove(fname)
             except OSError:
-                print "Warning: unable to remove", fname
+                print("Warning: unable to remove", fname)
 
 def CreateWizardConfig(manager, from_existing):
     import config

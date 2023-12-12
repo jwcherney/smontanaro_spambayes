@@ -30,9 +30,9 @@ TEMP_DBM_NAME = os.path.join(os.path.dirname(__file__), "temp.dbm")
 # be ours.
 for fn in [TEMP_PICKLE_NAME, TEMP_CSV_NAME, TEMP_DBM_NAME]:
     if os.path.exists(fn):
-        print(fn, "already exists.  Please remove this file before " \
+        print((fn, "already exists.  Please remove this file before " \
               "running these tests (a file by that name will be " \
-              "created and destroyed as part of the tests).")
+              "created and destroyed as part of the tests)."))
         sys.exit(1)
 
 class dbexpimpTest(unittest.TestCase):

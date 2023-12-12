@@ -26,7 +26,7 @@ def log(s):
     global _start
     if _start is None:
         _start = time.time()
-    print(round(time.time() - _start, 2), s)
+    print((round(time.time() - _start, 2), s))
 
 
 class IterOOBTree(OOBTree):

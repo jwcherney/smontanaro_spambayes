@@ -89,7 +89,7 @@ def usage(*args):
     defaults = {}
     for d in args:
         defaults.update(d)
-    print(__doc__ % defaults)
+    print((__doc__ % defaults))
 
 def main(argv):
     null = False

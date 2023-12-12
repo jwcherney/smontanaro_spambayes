@@ -28,9 +28,11 @@ def cmpf(a, b):
     if ma and mb:
         xa, ya = list(map(int, ma.groups()))
         xb, yb = list(map(int, mb.groups()))
-        return cmp((xa, ya), (xb, yb))
+        aa = (xa, ya)
+        bb = (xb, yb)
+        return (aa > bb) - (aa < bb) 
     else:
-        return cmp(a, b)
+        return (a > b) - (a < b) 
 
 program = sys.argv[0]
 

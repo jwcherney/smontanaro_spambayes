@@ -27,6 +27,8 @@ from spambayes.classifier import Classifier
 from sb_imapfilter import run, BadIMAPResponseError, LoginFailure
 from sb_imapfilter import IMAPSession, IMAPMessage, IMAPFolder, IMAPFilter
 
+from gettext import gettext
+
 IMAP_PORT = 8143
 IMAP_USERNAME = "testu"
 IMAP_PASSWORD = "testp"
@@ -304,7 +306,7 @@ class TestIMAP4Server(Dibbler.BrighterAsyncChat):
             except TypeError:
                 simple = []
                 for part in response[msg]:
-                    if isinstance(part, (str,)):
+                    if isinstance(part, str):
                         simple.append(part)
                     else:
                         simple.append('%s\r\n%s)' % (part[0], part[1]))
@@ -812,7 +814,7 @@ class InterfaceTest(unittest.TestCase):
         from urllib.request import urlopen
         from urllib.parse import urlencode
         urlopen('http://localhost:%d/save' % options["html_ui", "port"],
-                urlencode({'how': _('Save & shutdown')})).read()
+                urlencode({'how': gettext('Save & shutdown')})).read()
 
     def test_UI(self):
         # Smoke-test the HTML UI.

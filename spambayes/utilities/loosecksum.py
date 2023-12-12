@@ -92,7 +92,7 @@ def main(args):
 
     for mbox in mboxes:
         for msg in mbox:
-            print(generate_checksum(msg))
+            print((generate_checksum(msg)))
 
 if __name__ == "__main__":
     main(sys.argv[1:])

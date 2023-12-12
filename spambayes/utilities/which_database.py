@@ -29,7 +29,7 @@ sys.path.insert(-1, os.path.dirname(os.getcwd()))
 from spambayes.Options import options, get_pathname_option
 import dbm.dumb
 import dbm.bsd
-import dbm
+import dbm.ndbm
 try:
     import bsddb
 except ImportError:
@@ -37,19 +37,19 @@ except ImportError:
 
 def main():
     print("Pickle is available.")
-    db = dbm.dumb.open("dumbdb", "c")
+    db = dbm.ndbm.dumb.open("dumbdb", "c")
     db["1"] = "1"
     db.close()
-    dbstr = dbm.whichdb("dumbdb")
+    dbstr = dbm.ndbm.whichdb("dumbdb")
     if dbstr:
         print("Dumbdbm is available.")
     else:
         print("Dumbdbm is not available.")
 
-    db = dbm.bsd.open("dbhash", "c")
+    db = dbm.ndbm.bsd.open("dbhash", "c")
     db["1"] = "1"
     db.close()
-    dbstr = dbm.whichdb("dbhash")
+    dbstr = dbm.ndbm.whichdb("dbhash")
     if dbstr == "dbhash":
         print("Dbhash is available.")
     else:
@@ -61,7 +61,7 @@ def main():
         db = bsddb.hashopen("bsddb3", "c")
         db["1"] = "1"
         db.close()
-        dbstr = dbm.whichdb("bsddb3")
+        dbstr = dbm.ndbm.whichdb("bsddb3")
     if dbstr == "dbhash":
         print("Bsddb[3] is available.")
     else:
@@ -72,13 +72,13 @@ def main():
     hammie = get_pathname_option("Storage", "persistent_storage_file")
     use_dbm = options["Storage", "persistent_use_database"]
     if not use_dbm:
-        print("Your storage %s is a: pickle" % (hammie,))
+        print(("Your storage %s is a: pickle" % (hammie,)))
         return
 
     if not os.path.exists(hammie):
         print("Your storage file does not exist yet.")
         return
-    db_type = dbm.whichdb(hammie)
+    db_type = dbm.ndbm.whichdb(hammie)
     if db_type == "dbhash":
         # could be dbhash or bsddb3
         # only bsddb3 has a __version__ attribute - old bsddb module does not
@@ -89,11 +89,11 @@ def main():
                 pass
             else:
                 db.close()
-                print("Your storage", hammie, "is a: bsddb[3]")
+                print(("Your storage", hammie, "is a: bsddb[3]"))
                 return
     elif db_type is None:
-        print("Your storage %s is unreadable." % (hammie,))
-    print("Your storage %s is a: %s" % (hammie, db_type))
+        print(("Your storage %s is unreadable." % (hammie,)))
+    print(("Your storage %s is a: %s" % (hammie, db_type)))
 
 if __name__ == "__main__":
     main()

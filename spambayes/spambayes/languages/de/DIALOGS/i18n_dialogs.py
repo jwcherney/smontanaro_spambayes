@@ -3,7 +3,7 @@
 _rc_size_=30899
 _rc_mtime_=1173774820
 try:
-    _
+    _ # pyright: ignore [reportUndefinedVariable]
 except NameError:
     def _(s):
         return s

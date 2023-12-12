@@ -91,7 +91,7 @@ def hammer():
         isSpam = random.choice([True, False])
         prob = classify(makeMessage(isSpam))
         if i < 10 or i % 100 == 0:
-            print("%6.6d: %d, %.4f" % (i, isSpam, prob))
+            print(("%6.6d: %d, %.4f" % (i, isSpam, prob)))
 
         # Every thousand messages or so, reopen the DB without closing it.
         # The way this works will open the new instance before the existing
@@ -112,9 +112,9 @@ def hammer():
 
 def test():
     """Print a random ham message and a random spam message."""
-    print(makeMessage(False))
+    print((makeMessage(False)))
     print()
-    print(makeMessage(True))
+    print((makeMessage(True)))
 
 
 ham = [ {

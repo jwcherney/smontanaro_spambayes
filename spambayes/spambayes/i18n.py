@@ -18,7 +18,7 @@ __credits__ = "Tony Meyer, All the SpamBayes folk."
 import os
 import sys
 from locale import getdefaultlocale
-from gettext import translation, NullTranslations
+from gettext import translation, NullTranslations, gettext
 # Note, we must not import spambayes.Options, or Outlook will not be happy.
 
 ## Set language environment for gettext and for dynamic load of dialogs.
@@ -180,38 +180,38 @@ class LanguageManager:
 
 def test():
     lm = LanguageManager()
-    print("INIT: len(sys.path): ", len(sys.path))
+    print(("INIT: len(sys.path): ", len(sys.path)))
     print("TEST default lang")
     lm.set_language(lm.locale_default_lang())
-    print("\tCurrent Languages: ", lm.current_langs_codes)
-    print("\tlen(sys.path): ", len(sys.path))
-    print("\t", _("Help"))
+    print(("\tCurrent Languages: ", lm.current_langs_codes))
+    print(("\tlen(sys.path): ", len(sys.path)))
+    print(("\t", gettext("Help")))
 
     print("TEST clear_language")
     lm.clear_language()
-    print("\tCurrent Languages: ", lm.current_langs_codes)
-    print("\tlen(sys.path): ", len(sys.path))
-    print("\t", _("Help"))
+    print(("\tCurrent Languages: ", lm.current_langs_codes))
+    print(("\tlen(sys.path): ", len(sys.path)))
+    print(("\t", gettext("Help")))
 
     print("TEST set_language")
     for langcode in ["kk_KK", "z", "", "es", None, "es_AR"]:
-        print("lang: ", langcode)
+        print(("lang: ", langcode))
 
         lm.set_language(langcode)
-        print("\tCurrent Languages: ", lm.current_langs_codes)
-        print("\tlen(sys.path): ", len(sys.path))
-        print("\t", _("Help"))
+        print(("\tCurrent Languages: ", lm.current_langs_codes))
+        print(("\tlen(sys.path): ", len(sys.path)))
+        print(("\t", gettext("Help")))
 
     lm.clear_language()
 
     print("TEST add_language")
     for langcode in ["kk_KK", "z", "", "es", None, "es_AR"]:
-        print("lang: ", langcode)
+        print(("lang: ", langcode))
 
         lm.add_language(langcode)
-        print("\tCurrent Languages: ", lm.current_langs_codes)
-        print("\tlen(sys.path): ", len(sys.path))
-        print("\t", _("Help"))
+        print(("\tCurrent Languages: ", lm.current_langs_codes))
+        print(("\tlen(sys.path): ", len(sys.path)))
+        print(("\t", gettext("Help")))
 
 if __name__ == '__main__':
     test()

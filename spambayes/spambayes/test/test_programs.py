@@ -20,7 +20,7 @@ def call_web_function(url, **kw):
     got = urlopen(url, urlencode(kw)).read()
     # Very simple - just look for tracebacks
     if got.find("Traceback (most recent call last)")>=0:
-        print("FAILED calling URL", url)
+        print(("FAILED calling URL", url))
         print(got)
         raise AssertionError("Opening URL %s appeared to fail" % (url,))
 
@@ -87,14 +87,14 @@ class Spawner_sb_server(Spawner):
         self.test_case.assertTrue(not is_any_sb_server_running(),
                                   "Should be no server running")
         if verbose > 1:
-            print("Spawning", self.spawn_args)
+            print(("Spawning", self.spawn_args))
         self.pid = self._spawn(self.spawn_args)
         # wait for it to start - 5 secs, 0.25 per check
         for i in range(20):
             time.sleep(0.25)
             if verbose > 1:
-                print("Waiting for start flags: running=%s, global_mutex=%s" \
-                       % (self.is_running(), is_any_sb_server_running()))
+                print(("Waiting for start flags: running=%s, global_mutex=%s" \
+                       % (self.is_running(), is_any_sb_server_running())))
             if self.is_running() and is_any_sb_server_running():
                 return
         # gave up waiting.
@@ -136,7 +136,7 @@ class TestServer(unittest.TestCase):
         # If we cause failure here, we mask the underlying error which left
         # the server running - so just print the warning.
         if is_any_sb_server_running():
-            print("WARNING:", self, "completed with the platform mutex held")
+            print(("WARNING:", self, "completed with the platform mutex held"))
     def _start_spawner(self, spawner):
         self.assertTrue(not spawner.is_running(),
                         "this spawneer can't be running")
@@ -198,7 +198,7 @@ if sys.platform.startswith("win"):
                             "(platform mutex held)")
         def tearDown(self):
             if is_any_sb_server_running():
-                print("WARNING:", self, "completed with the platform mutex held")
+                print(("WARNING:", self, "completed with the platform mutex held"))
         def _start_service(self):
             win32serviceutil.StartService(service_name)
             for i in range(10):
@@ -207,7 +207,7 @@ if sys.platform.startswith("win"):
                 if status[1] == win32service.SERVICE_RUNNING:
                     break
                 if verbose > 1:
-                    print("Service status is %d - still waiting" % status[1])
+                    print(("Service status is %d - still waiting" % status[1]))
             else:
                 self.fail("Gave up waiting for service to start")
         def _stop_service(self):

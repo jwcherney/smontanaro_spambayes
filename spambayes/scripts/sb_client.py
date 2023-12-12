@@ -18,7 +18,7 @@ def main():
         x = xmlrpc.client.ServerProxy(RPCBASE)
         m = xmlrpc.client.Binary(msg)
         out = x.filter(m)
-        print(out.data)
+        print((out.data))
     except:
         if __debug__:
             import traceback

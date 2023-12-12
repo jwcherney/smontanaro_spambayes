@@ -92,7 +92,7 @@ filter'''
             raise ValueError
 
         if options["globals", "verbose"]:
-            print('adding', message.key(), 'to corpus')
+            print(('adding', message.key(), 'to corpus'))
 
         message.directory = self.directory
         message.store()
@@ -103,7 +103,7 @@ filter'''
     def removeMessage(self, message, observer_flags=0):
         '''Remove a Message from this corpus'''
         if options["globals", "verbose"]:
-            print('removing', message.key(), 'from corpus')
+            print(('removing', message.key(), 'from corpus'))
 
         message.remove()
 
@@ -202,7 +202,7 @@ class FileMessage:
                "Must set filename before using FileMessage instances."
 
         if options["globals", "verbose"]:
-            print('loading', self.file_name)
+            print(('loading', self.file_name))
 
         pn = self.pathname()
 
@@ -234,7 +234,7 @@ class FileMessage:
                "Must set filename before using FileMessage instances."
 
         if options["globals", "verbose"]:
-            print('storing', self.file_name)
+            print(('storing', self.file_name))
 
         fp = open(self.pathname(), 'wb')
         fp.write(self.as_string())
@@ -243,14 +243,14 @@ class FileMessage:
     def remove(self):
         '''Message hara-kiri'''
         if options["globals", "verbose"]:
-            print('physically deleting file', self.pathname())
+            print(('physically deleting file', self.pathname()))
         try:
             os.unlink(self.pathname())
         except OSError:
             # The file probably isn't there anymore.  Maybe a virus
             # protection program got there first?
             if options["globals", "verbose"]:
-                print('file', self.pathname(), 'can not be deleted')
+                print(('file', self.pathname(), 'can not be deleted'))
 
     def name(self):
         '''A unique name for the message'''
@@ -326,7 +326,7 @@ class GzipFileMessage(FileMessage):
                "Must set filename before using FileMessage instances."
 
         if options["globals", "verbose"]:
-            print('storing', self.file_name)
+            print(('storing', self.file_name))
 
         pn = self.pathname()
         gz = gzip.open(pn, 'wb')
