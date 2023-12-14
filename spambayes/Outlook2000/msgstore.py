@@ -117,7 +117,7 @@ def MsgStoreExceptionFromCOMException(com_exc):
     return MsgStoreException(com_exc)
 
 def NormalizeCOMException(exc_val):
-    hr, msg, exc, arg_err = exc_val
+    hr, msg, exc, arg_err = exc_val.hresult, exc_val.strerror, exc_val.excepinfo, exc_val.argerror
     if hr == winerror.DISP_E_EXCEPTION and exc:
         # 'client' exception - unpack 'exception object'
         wcode, source, msg, help1, help2, hr = exc
@@ -282,7 +282,7 @@ class MAPIMsgStore:
                "Item IDs must be a tuple (not a %r)" % item_id
         try:
             store_id, entry_id = item_id
-            return mapi.BinFromHex(store_id), mapi.BinFromHex(entry_id)
+            return store_id, entry_id
         except ValueError:
             raise MsgStoreException(None, "The specified ID '%s' is invalid" % (item_id,))
 
@@ -335,8 +335,8 @@ class MAPIMsgStore:
         try: # catch all MAPI errors
             try:
                 # See if this is an Outlook folder item
-                sid = mapi.BinFromHex(folder_id.StoreID)
-                eid = mapi.BinFromHex(folder_id.EntryID)
+                sid = folder_id.StoreID
+                eid = folder_id.EntryID
                 folder_id = sid, eid
             except AttributeError:
                 # No 'EntryID'/'StoreID' properties - a 'normal' ID
@@ -356,8 +356,8 @@ class MAPIMsgStore:
         # message representing the object.
         try: # catch all MAPI exceptions.
             try:
-                eid = mapi.BinFromHex(message_id.EntryID)
-                sid = mapi.BinFromHex(message_id.Parent.StoreID)
+                eid = message_id.EntryID
+                sid = message_id.Parent.StoreID
                 message_id = sid, eid
             except AttributeError:
                 # No 'EntryID'/'StoreID' properties - a 'normal' ID
